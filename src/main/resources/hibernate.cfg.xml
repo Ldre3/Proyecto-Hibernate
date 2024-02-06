@@ -32,5 +32,6 @@
         <mapping class="Modelo.Cliente"/>
         <mapping class="Modelo.Billete"/>
         <mapping class="Modelo.Vuelo"/>
+        <mapping class="Modelo.Aeropuerto"/>
     </session-factory>
 </hibernate-configuration>

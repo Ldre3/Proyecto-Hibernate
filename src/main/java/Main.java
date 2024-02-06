@@ -1,3 +1,4 @@
+import Modelo.Aeropuerto;
 import Modelo.Billete;
 import Modelo.Cliente;
 import Modelo.Vuelo;
@@ -43,9 +44,25 @@ public class Main {
             vuelo.setBilletes(new ArrayList<>());
             vuelo.getBilletes().add(billete1);
             vuelo.getBilletes().add(billete2);
+            // Crear aeropuertos
+            Aeropuerto aeropuertoOrigen = new Aeropuerto();
+            aeropuertoOrigen.setCodigo("A001");
+            aeropuertoOrigen.setCiudad("Madrid");
+            Aeropuerto aeropuertoDestino = new Aeropuerto();
+            aeropuertoDestino.setCodigo("A002");
+            aeropuertoDestino.setCiudad("Barcelona");
+            // Añadir los aeropuertos al vuelo
+            vuelo.setAeropuertoOrigen(aeropuertoOrigen);
+            vuelo.setAeropuertoDestino(aeropuertoDestino);
+            aeropuertoOrigen.setVuelosOrigen(new ArrayList<>());
+            aeropuertoOrigen.getVuelosOrigen().add(vuelo);
+            aeropuertoDestino.setVuelosDestino(new ArrayList<>());
+            aeropuertoDestino.getVuelosDestino().add(vuelo);
             // Persistir el cliente y el vuelo
             session.save(cliente);
             session.save(vuelo);
+            session.save(aeropuertoOrigen);
+            session.save(aeropuertoDestino);
             // Comprometer la transacción
             transaction.commit();
         } catch (Exception e) {

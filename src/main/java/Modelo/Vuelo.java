@@ -26,13 +26,13 @@ public class Vuelo {
     @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Billete> billetes;
 
-    //@ManyToOne
-//    @JoinColumn(name = "aeropuerto_origen_id", nullable = false)
-//    private Aeropuerto aeropuertoOrigen;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "aeropuerto_destino_id", nullable = false)
-//    private Aeropuerto aeropuertoDestino;
+    @ManyToOne
+    @JoinColumn(name = "aeropuerto_origen_id")
+    private Aeropuerto aeropuertoOrigen;
+
+    @ManyToOne
+    @JoinColumn(name = "aeropuerto_destino_id")
+    private Aeropuerto aeropuertoDestino;
 
 
 }
