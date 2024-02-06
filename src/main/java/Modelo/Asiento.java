@@ -23,4 +23,7 @@ public class Asiento {
     @JoinColumn(name = "vuelo_id")
     private Vuelo vuelo;
 
+    @OneToOne(mappedBy = "asiento")
+    private Pasajero pasajero;
+
 }

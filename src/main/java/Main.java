@@ -79,6 +79,11 @@ public class Main {
             billete1.setPasajeros(new ArrayList<>());
             billete1.getPasajeros().add(pasajero);
             billete1.getPasajeros().add(pasajero2);
+
+            asiento.setPasajero(pasajero);
+            asiento2.setPasajero(pasajero2);
+            pasajero.setAsiento(asiento);
+            pasajero2.setAsiento(asiento2);
             // Persistir
             session.save(cliente);
             session.save(vuelo);

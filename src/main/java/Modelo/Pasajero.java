@@ -30,4 +30,8 @@ public class Pasajero {
     @JoinColumn(name = "billete_id")
     private Billete billete;
 
+    @OneToOne
+    @JoinColumn(name = "asiento_id")
+    private Asiento asiento;
+
 }
