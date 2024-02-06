@@ -31,5 +31,6 @@
         <!-- Mention here all the model classes along with their package -->
         <mapping class="Modelo.Cliente"/>
         <mapping class="Modelo.Billete"/>
+        <mapping class="Modelo.Vuelo"/>
     </session-factory>
 </hibernate-configuration>

@@ -25,8 +25,8 @@ public class Billete {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-//    @ManyToOne
-//    @JoinColumn(name = "vuelo_id")
-//    private Vuelo vuelo;
+    @ManyToOne
+    @JoinColumn(name = "vuelo_id")
+    private Vuelo vuelo;
 
 }

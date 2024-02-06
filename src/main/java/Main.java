@@ -1,5 +1,6 @@
 import Modelo.Billete;
 import Modelo.Cliente;
+import Modelo.Vuelo;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import util.HibernateUtils;
@@ -32,8 +33,19 @@ public class Main {
             // Añadir los billetes al cliente
             cliente.getBilletes().add(billete1);
             cliente.getBilletes().add(billete2);
-            // Persistir el cliente y los billetes
+            // Crear vuelo
+            Vuelo vuelo = new Vuelo();
+            vuelo.setCodigo("V001");
+            vuelo.setFechaVuelo(new Date());
+            billete1.setVuelo(vuelo);
+            billete2.setVuelo(vuelo);
+            // Añadir los billetes al vuelo
+            vuelo.setBilletes(new ArrayList<>());
+            vuelo.getBilletes().add(billete1);
+            vuelo.getBilletes().add(billete2);
+            // Persistir el cliente y el vuelo
             session.save(cliente);
+            session.save(vuelo);
             // Comprometer la transacción
             transaction.commit();
         } catch (Exception e) {
