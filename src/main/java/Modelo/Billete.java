@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -28,5 +29,8 @@ public class Billete {
     @ManyToOne
     @JoinColumn(name = "vuelo_id")
     private Vuelo vuelo;
+
+    @OneToMany(mappedBy = "billete", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pasajero> pasajeros;
 
 }

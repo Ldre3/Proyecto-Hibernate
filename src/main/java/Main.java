@@ -68,11 +68,23 @@ public class Main {
             asiento2.setVuelo(vuelo);
             vuelo.getAsientos().add(asiento);
             vuelo.getAsientos().add(asiento2);
+            Pasajero pasajero = new Pasajero();
+            pasajero.setNombre("Pepe");
+            pasajero.setDni("12345678A");
+            Pasajero pasajero2 = new Pasajero();
+            pasajero2.setNombre("Pepe2");
+            pasajero2.setDni("12345678A2");
+            pasajero.setBillete(billete1);
+            pasajero2.setBillete(billete1);
+            billete1.setPasajeros(new ArrayList<>());
+            billete1.getPasajeros().add(pasajero);
+            billete1.getPasajeros().add(pasajero2);
             // Persistir
             session.save(cliente);
             session.save(vuelo);
             session.save(aeropuertoOrigen);
             session.save(aeropuertoDestino);
+            session.save(pasajero);
             // Comprometer la transacción
             transaction.commit();
         } catch (Exception e) {
