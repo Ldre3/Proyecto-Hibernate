@@ -1,13 +1,11 @@
-import Modelo.Aeropuerto;
-import Modelo.Billete;
-import Modelo.Cliente;
-import Modelo.Vuelo;
+import Modelo.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import util.HibernateUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -58,7 +56,19 @@ public class Main {
             aeropuertoOrigen.getVuelosOrigen().add(vuelo);
             aeropuertoDestino.setVuelosDestino(new ArrayList<>());
             aeropuertoDestino.getVuelosDestino().add(vuelo);
-            // Persistir el cliente y el vuelo
+            // Crear asientos y añadirlos al vuelo
+            vuelo.setAsientos(new ArrayList<>());
+            Asiento asiento = new Asiento();
+            asiento.setFila(1);
+            asiento.setLetra("A");
+            asiento.setVuelo(vuelo);
+            Asiento asiento2 = new Asiento();
+            asiento2.setFila(2);
+            asiento2.setLetra("B");
+            asiento2.setVuelo(vuelo);
+            vuelo.getAsientos().add(asiento);
+            vuelo.getAsientos().add(asiento2);
+            // Persistir
             session.save(cliente);
             session.save(vuelo);
             session.save(aeropuertoOrigen);

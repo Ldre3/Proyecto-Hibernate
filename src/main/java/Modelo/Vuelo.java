@@ -34,5 +34,9 @@ public class Vuelo {
     @JoinColumn(name = "aeropuerto_destino_id")
     private Aeropuerto aeropuertoDestino;
 
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Asiento> asientos;
+
 
 }
