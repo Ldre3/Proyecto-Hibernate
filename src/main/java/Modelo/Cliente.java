@@ -2,6 +2,7 @@ package Modelo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Cliente {
     @Column(name = "correo_electronico")
     private String correoElectronico;
 
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Billete> billetes;

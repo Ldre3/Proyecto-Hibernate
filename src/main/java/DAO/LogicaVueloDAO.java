@@ -1,5 +1,7 @@
 package DAO;
 
+import java.util.Date;
+
 public interface LogicaVueloDAO {
-    public void creaVuelo737();
+    public boolean creaVuelo737(String codigo, Date fechaVuelo);
 }

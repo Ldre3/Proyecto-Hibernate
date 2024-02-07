@@ -2,6 +2,7 @@ package Modelo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -22,10 +23,6 @@ public class Vuelo {
     @Column(name = "fecha_vuelo")
     private Date fechaVuelo;
 
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Billete> billetes;
-
     @ManyToOne
     @JoinColumn(name = "aeropuerto_origen_id")
     private Aeropuerto aeropuertoOrigen;
@@ -34,6 +31,7 @@ public class Vuelo {
     @JoinColumn(name = "aeropuerto_destino_id")
     private Aeropuerto aeropuertoDestino;
 
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asiento> asientos;

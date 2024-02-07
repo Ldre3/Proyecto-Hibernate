@@ -24,7 +24,10 @@ public class Pasajero {
     private Date fechaNacimiento;
 
     @Column(name = "descuento")
-    private Double descuento;
+    private final Double descuentoInfantil = 20.0;
+
+    @Column(name = "precio")
+    private Double precioBase;
 
     @ManyToOne
     @JoinColumn(name = "billete_id")

@@ -1,6 +1,8 @@
 package Modelo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -19,10 +21,20 @@ public class Asiento {
     @Column(name = "letra")
     private String letra;
 
+    @Column (name = "libre")
+    private boolean libre;
+
+    @Column(name = "tipo")
+    private Character tipo;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "vuelo_id")
     private Vuelo vuelo;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "asiento")
     private Pasajero pasajero;
 

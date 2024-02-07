@@ -1,5 +1,8 @@
+import DAO.BilleteDAOImpl;
+import DAO.LogicaVueloDAOImpl;
 import Modelo.*;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import util.HibernateUtils;
 
@@ -38,10 +41,6 @@ public class Main {
             vuelo.setFechaVuelo(new Date());
             billete1.setVuelo(vuelo);
             billete2.setVuelo(vuelo);
-            // Añadir los billetes al vuelo
-            vuelo.setBilletes(new ArrayList<>());
-            vuelo.getBilletes().add(billete1);
-            vuelo.getBilletes().add(billete2);
             // Crear aeropuertos
             Aeropuerto aeropuertoOrigen = new Aeropuerto();
             aeropuertoOrigen.setCodigo("A001");
@@ -71,19 +70,48 @@ public class Main {
             Pasajero pasajero = new Pasajero();
             pasajero.setNombre("Pepe");
             pasajero.setDni("12345678A");
+            pasajero.setPrecioBase(100.0);
+            Date fechaNacimiento = new Date();
+            fechaNacimiento.setYear(111);
+            pasajero.setFechaNacimiento(fechaNacimiento);
             Pasajero pasajero2 = new Pasajero();
             pasajero2.setNombre("Pepe2");
             pasajero2.setDni("12345678A2");
+            pasajero2.setPrecioBase(100.0);
+            Date fechaNacimiento2 = new Date();
+            fechaNacimiento2.setYear(70);
+            pasajero2.setFechaNacimiento(fechaNacimiento2);
             pasajero.setBillete(billete1);
             pasajero2.setBillete(billete1);
+            Pasajero pasajero3 = new Pasajero();
+            pasajero3.setNombre("Pepe2");
+            pasajero3.setDni("12345678A2");
+            pasajero3.setPrecioBase(100.0);
             billete1.setPasajeros(new ArrayList<>());
             billete1.getPasajeros().add(pasajero);
             billete1.getPasajeros().add(pasajero2);
-
+            billete1.getPasajeros().add(pasajero3);
             asiento.setPasajero(pasajero);
             asiento2.setPasajero(pasajero2);
+            Asiento asiento3 = new Asiento();
+            asiento3.setFila(4);
+            asiento3.setLetra("C");
+            asiento3.setVuelo(vuelo);
+            asiento.setPasajero(pasajero3);
+            vuelo.getAsientos().add(asiento3);
+            pasajero3.setAsiento(asiento3);
+            pasajero3.setBillete(billete1);
             pasajero.setAsiento(asiento);
             pasajero2.setAsiento(asiento2);
+
+            for (int i = 0; i < 3; i++) {
+                Asiento asiento4 = new Asiento();
+                asiento4.setFila(5);
+                asiento4.setLetra(String.valueOf((char) (i + 65)));
+                asiento4.setLibre(true);
+                asiento4.setVuelo(vuelo);
+                vuelo.getAsientos().add(asiento4);
+            }
             // Persistir
             session.save(cliente);
             session.save(vuelo);
@@ -92,6 +120,13 @@ public class Main {
             session.save(pasajero);
             // Comprometer la transacción
             transaction.commit();
+            SessionFactory session2 = HibernateUtils.getSessionFactory();
+            BilleteDAOImpl billeteDAO = new BilleteDAOImpl(session2);
+            billeteDAO.calcularPrecioFinal(billete1);
+            billeteDAO.crearBillete(new Date(), 100.0, cliente, vuelo, new ArrayList<>());
+            billeteDAO.reasignarAsientosFamilia(billete1);
+            LogicaVueloDAOImpl logicaVueloDAO = new LogicaVueloDAOImpl(session2);
+            logicaVueloDAO.creaVuelo737("V002", new Date());
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

@@ -1,6 +1,8 @@
 package Modelo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,9 +22,13 @@ public class Aeropuerto {
     @Column(name = "ciudad")
     private String ciudad;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "aeropuertoOrigen", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vuelo> vuelosOrigen;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "aeropuertoDestino", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vuelo> vuelosDestino;
 
