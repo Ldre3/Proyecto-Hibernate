@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Calendar.getInstance;
 
-public class BilleteDAOImpl implements BilleteDAO{
+public class BilleteDAOImpl implements BilleteDAO, GenericDao<Billete, Long>{
 
     private SessionFactory sessionFactory;
 
@@ -63,10 +63,7 @@ public class BilleteDAOImpl implements BilleteDAO{
                                 billete.getVuelo().getAsientos().stream().filter(asiento -> asiento.getFila() == asientoPasajero.getFila() && asiento.getLetra().equals(asientoPasajero.getLetra())||asiento.getFila()==asientoAntiguo.getFila() && asiento.getLetra().equals(asientoAntiguo.getLetra())).forEach(asiento -> {
                                     asiento.setLibre(!asiento.isLibre());
                                     session.merge(asiento);
-                                    System.out.println(asiento);
                                 });
-                                session.merge(pasajero);
-                                System.out.println(pasajero);
                             });
                             asignado.set(true);
                         }
@@ -102,5 +99,74 @@ public class BilleteDAOImpl implements BilleteDAO{
             session.close();
         }
 
+    }
+
+    @Override
+    public void add(Billete billete) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.save(billete);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public Billete getById(Long id) {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.get(Billete.class, id);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Billete> getAll() {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("FROM Billete", Billete.class).getResultList();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public void update(Billete billete) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.merge(billete);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public void delete(Billete entity) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.delete(entity);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
+        } finally {
+            session.close();
+        }
     }
 }

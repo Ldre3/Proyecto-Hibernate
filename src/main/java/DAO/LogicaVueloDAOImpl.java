@@ -8,9 +8,10 @@ import org.hibernate.Transaction;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.IntStream;
 
-public class LogicaVueloDAOImpl implements LogicaVueloDAO{
+public class LogicaVueloDAOImpl implements LogicaVueloDAO, GenericDao<Vuelo, Long> {
     private SessionFactory sessionFactory;
 
     public LogicaVueloDAOImpl(SessionFactory sessionFactory) {
@@ -47,6 +48,76 @@ public class LogicaVueloDAOImpl implements LogicaVueloDAO{
         } catch (RuntimeException e) {
             if (transaction != null) transaction.rollback();
             return false;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public void add(Vuelo vuelo) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.save(vuelo);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public Vuelo getById(Long id) {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.get(Vuelo.class, id);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Vuelo> getAll() {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("FROM Vuelo", Vuelo.class).getResultList();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public void update(Vuelo vuelo) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.merge(vuelo);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
+        } finally {
+            session.close();
+        }
+
+    }
+
+    @Override
+    public void delete(Vuelo vuelo) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.delete(vuelo);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
         } finally {
             session.close();
         }
