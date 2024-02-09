@@ -23,20 +23,20 @@ public class LogicaVueloDAOImpl implements LogicaVueloDAO, GenericDao<Vuelo, Lon
         Transaction transaction = null;
         try {
             // Comprobar si existe un vuelo con el mismo código
-            if (session.createQuery("FROM Vuelo", Vuelo.class).getResultList().stream().anyMatch(vuelo -> vuelo.getCodigo().equals(codigo))) return false;
+            if (session.createQuery("FROM Vuelo", Vuelo.class).getResultList().stream().anyMatch(vuelo -> vuelo.getCodigo().equals(codigo))) return false; // Si ya exite con un vuelo con ese codigo retornamos false
             transaction = session.beginTransaction();
             Vuelo vuelo = new Vuelo();
             vuelo.setCodigo(codigo);
             vuelo.setFechaVuelo(fechaVuelo);
             vuelo.setAsientos(new ArrayList<>());
-            IntStream.rangeClosed(1, 31)
-                    .forEach(filas -> IntStream.rangeClosed(0, 5)
+            IntStream.rangeClosed(1, 31) // Creamos 31 filas de asientos
+                    .forEach(filas -> IntStream.rangeClosed(0, 5) // Creamos 6 asientos por fila
                             .forEach(letra -> {
                                 Asiento asiento = new Asiento();
                                 asiento.setFila(filas);
                                 asiento.setLetra(String.valueOf((char) (letra + 65)));
                                 asiento.setLibre(true);
-                                Character tipo = filas<=5?'A':'B';
+                                Character tipo = filas<=5?'A':'B'; // Las 5 primeras filas son de primera clase y el resto de clase turista
                                 asiento.setTipo(tipo);
                                 asiento.setVuelo(vuelo);
                                 vuelo.getAsientos().add(asiento);

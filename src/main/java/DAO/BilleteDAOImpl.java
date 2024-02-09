@@ -5,14 +5,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.util.Calendar.getInstance;
 
 public class BilleteDAOImpl implements BilleteDAO, GenericDao<Billete, Long>{
 
@@ -27,11 +25,11 @@ public class BilleteDAOImpl implements BilleteDAO, GenericDao<Billete, Long>{
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            Calendar calendar = Calendar.getInstance();
             billete.setPrecioFinal(billete.getPasajeros().stream()
                     .mapToDouble(pasajero -> new Date().getYear() - pasajero.getFechaNacimiento().getYear() < 16?pasajero.getPrecioBase() - (pasajero.getPrecioBase() * (pasajero.getDescuentoInfantil() / 100)):pasajero.getPrecioBase())
-                    .sum());
-            session.merge(billete);
+                    // Si el pasajero es menor de 16 años se le aplica el descuento infantil que tiene asociado
+                    .sum()); // Sumamos el precio de todos los pasajeros
+            session.merge(billete); // Actualizamos el billete
             transaction.commit();
         } catch (RuntimeException e) {
             if (transaction != null) transaction.rollback();
@@ -47,24 +45,36 @@ public class BilleteDAOImpl implements BilleteDAO, GenericDao<Billete, Long>{
         try {
             transaction = session.beginTransaction();
             if (billete.getPasajeros().stream()
-                    .allMatch(pasajero -> pasajero.getAsiento().getFila()==billete.getPasajeros().get(0).getAsiento().getFila())) return;
-            AtomicBoolean asignado = new AtomicBoolean();
+                    .allMatch(pasajero -> pasajero.getAsiento().getFila()==billete.getPasajeros().get(0).getAsiento().getFila())) return; // Si todos los pasajeros ya están en la misma fila no hacemos nada
+            AtomicBoolean asignado = new AtomicBoolean(); // Variable para saber si ya se ha asignado un asiento, tiene que ser atomica para poder ser modificada dentro de un stream
             asignado.set(false);
-
             billete.getVuelo().getAsientos().stream()
-                    .map(Asiento::getFila).forEach(fila ->{
-                        if (billete.getPasajeros().size() <= billete.getVuelo().getAsientos().stream().filter(asiento -> asiento.getFila() == fila && asiento.isLibre()).count() && !asignado.get()) {
+                    .map(Asiento::getFila).forEach(fila ->{ // Para cada fila
+                        // Si hay suficientes asientos libres en la fila y no se ha asignado ya
+                        if (billete.getPasajeros().size() <= billete.getVuelo().getAsientos().stream()
+                                .filter(asiento -> asiento.getFila() == fila && asiento.isLibre())
+                                .count() && !asignado.get())  {
+                            // Para cada pasajero
                             billete.getPasajeros().forEach(pasajero -> {
+                                // Cambiamos el asiento del pasajero
                                 Asiento asientoAntiguo = pasajero.getAsiento();
                                 asientoAntiguo.setPasajero(null);
-                                pasajero.setAsiento(billete.getVuelo().getAsientos().stream().filter(asiento -> asiento.getFila() == fila && asiento.isLibre() && Objects.equals(asiento.getVuelo().getId(), billete.getVuelo().getId())).findFirst().get());
+                                // Buscamos el primer asiento libre en la fila para ese vuelo y se lo asignamos al pasajero
+                                pasajero.setAsiento(billete.getVuelo().getAsientos().stream()
+                                        .filter(asiento -> asiento.getFila() == fila && asiento.isLibre() && Objects.equals(asiento.getVuelo().getId(), billete.getVuelo().getId()))
+                                        .findFirst()
+                                        .get());
                                 Asiento asientoPasajero = pasajero.getAsiento();
                                 asientoPasajero.setPasajero(pasajero);
-                                billete.getVuelo().getAsientos().stream().filter(asiento -> asiento.getFila() == asientoPasajero.getFila() && asiento.getLetra().equals(asientoPasajero.getLetra())||asiento.getFila()==asientoAntiguo.getFila() && asiento.getLetra().equals(asientoAntiguo.getLetra())).forEach(asiento -> {
+                                // Cambiamos el estado de los asientos que hemos modificado y lo perisistimos
+                                billete.getVuelo().getAsientos().stream()
+                                        .filter(asiento -> asiento.getFila() == asientoPasajero.getFila() && asiento.getLetra().equals(asientoPasajero.getLetra())||asiento.getFila()==asientoAntiguo.getFila() && asiento.getLetra().equals(asientoAntiguo.getLetra()))
+                                        .forEach(asiento -> {
                                     asiento.setLibre(!asiento.isLibre());
                                     session.merge(asiento);
                                 });
                             });
+                            // Cambiamos la variable para que no reasigne más asientos
                             asignado.set(true);
                         }
                     });
